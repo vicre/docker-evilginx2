@@ -10,7 +10,7 @@ services:
     labels:
       - coolify.port=443
     volumes:
-      - config_data:/config
+      - ./config:/config
       - phishlets_data:/phishlets
     stdin_open: true     # <‑‑ keep STDIN open
     tty: true            # <‑‑ allocate a pseudo‑TTY
