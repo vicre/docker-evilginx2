@@ -1,18 +1,15 @@
 services:
   evilginx:
     image: warhorse/evilginx2:latest
-    container_name: evilginx2        # <‑ optional friendly name
-    # Run Evilginx with HTTPS disabled, HTTP on port 80
-    command: >
-      /bin/evilginx -p /phishlets -c /config
-                   -http-port 80
-                   -https-port 0
+    container_name: evilginx2
     expose:
-      - "443"
+      - "443"                    # internal port
     labels:
-      - coolify.port=443           # already present
+      - coolify.port=443
       - traefik.http.services.evilginx.loadbalancer.server.scheme=https
     volumes:
-      - ./phishlets:/phishlets       # or named volume if you prefer
+      - ./phishlets:/phishlets
       - config_data:/config
     restart: unless-stopped
+volumes:
+  config_data:
