@@ -1,21 +1,17 @@
-version: "3.9"
 services:
   evilginx:
-    container_name: evilginx2
-    image: warhorse/evilginx2:latest     # easiest proven image
-    environment:
-      TZ: Europe/Copenhagen
+    image: warhorse/evilginx2:latest
+    container_name: evilginx2        # <‑ optional friendly name
+    # Run Evilginx with HTTPS disabled, HTTP on port 80
+    command: >
+      /bin/evilginx -p /phishlets -c /config
+                   -http-port 80
+                   -https-port 0
     expose:
-      - "443"
+      - "80"
     labels:
-      - coolify.port=443
+      - coolify.port=80              # tell Traefik to forward to port 80
     volumes:
-      - ./config:/config
-      - ./phishlets:/phishlets
-    stdin_open: true     # <‑‑ keep STDIN open
-    tty: true            # <‑‑ allocate a pseudo‑TTY
+      - ./phishlets:/phishlets       # or named volume if you prefer
+      - config_data:/config
     restart: unless-stopped
-
-volumes:
-  config_data:
-  phishlets_data:
