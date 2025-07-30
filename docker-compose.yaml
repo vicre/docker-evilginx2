@@ -5,24 +5,27 @@ services:
     image: warhorse/evilginx2:latest
     container_name: evilginx2
 
-    # Run Evilginx in developer mode, HTTP only on port 80
-    entrypoint: >
-      /bin/evilginx
-        -developer                     # keep internal DNS/TLS disabled
-        -p /phishlets
-        -c /config
-        -http-port 80
-        -https-port 0                  # disable HTTPS listener
+    # Completely replace the original entry‑point with an array
+    entrypoint:
+      - /bin/evilginx
+      - -developer
+      - -p
+      - /phishlets
+      - -c
+      - /config
+      - -http-port
+      - "80"
+      - -https-port
+      - "0"
 
     expose:
-      - "80"                           # internal port Traefik will hit
+      - "80"
 
     labels:
-      - coolify.port=80                # Coolify/Traefik forwards to port 80
-      # (no scheme=https label)
+      - coolify.port=80                # Traefik forwards plain HTTP
 
     volumes:
-      - ./phishlets:/phishlets         # phishlets under version control
+      - ./phishlets:/phishlets         # phishlet YAMLs
       - config_data:/config            # sessions, creds, settings
 
     restart: unless-stopped
