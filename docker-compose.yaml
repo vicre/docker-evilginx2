@@ -1,16 +1,19 @@
+version: "3.9"
 services:
   evilginx:
-    build: .
+    image: warhorse/evilginx2:latest     # easiest proven image
     container_name: evilginx2
     environment:
       TZ: Europe/Copenhagen
-    expose:                       # <‑‑ expose, don’t publish
+    expose:
       - "443"
-    labels:                       # <‑‑ tell Coolify/Traefik
-      - coolify.port=443          # internal port to proxy
+    labels:
+      - coolify.port=443
     volumes:
       - config_data:/config
       - phishlets_data:/phishlets
+    stdin_open: true     # <‑‑ keep STDIN open
+    tty: true            # <‑‑ allocate a pseudo‑TTY
     restart: unless-stopped
 
 volumes:
