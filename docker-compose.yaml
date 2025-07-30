@@ -3,7 +3,6 @@ services:
   evilginx:
     container_name: evilginx2
     image: warhorse/evilginx2:latest     # easiest proven image
-    container_name: evilginx2
     environment:
       TZ: Europe/Copenhagen
     expose:
