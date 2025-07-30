@@ -1,0 +1,25 @@
+services:
+  evilginx:
+    # --- build FROM YOUR DOCKERFILE -----------------
+    build: .
+    # If you prefer the pre‑built image that your
+    # GitHub Actions will publish, replace the two
+    # lines above with:
+    # image: ghcr.io/vicre/docker-evilginx2:latest
+    --------------------------------------------------
+    container_name: evilginx2
+    environment:
+      TZ: Europe/Copenhagen            # adjust if needed
+    ports:                             # expose HTTP + HTTPS
+      - "80:80"
+      - "443:443"
+    volumes:                           # persistent data
+      - config_data:/config            # Evilginx state, certs, creds.db
+      - phishlets_data:/phishlets      # your YAML phishlets
+    restart: unless-stopped            # auto‑start with the VM
+
+# Named volumes live outside the repo, so Coolify
+# will re‑attach them on every redeploy.
+volumes:
+  config_data:
+  phishlets_data:
