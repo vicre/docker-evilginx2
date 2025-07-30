@@ -2,7 +2,7 @@ FROM golang:alpine
 
 ARG BUILD_RFC3339="1970-01-01T00:00:00Z"
 ARG COMMIT="local"
-ARG VERSION="v3.2.0"
+ARG VERSION="v3.3.0"
 
 ENV GITHUB_USER="kgretzky"
 ENV EVILGINX_REPOSITORY="github.com/${GITHUB_USER}/evilginx2"
@@ -15,9 +15,11 @@ RUN mkdir -p ${GOPATH}/src/github.com/${GITHUB_USER} \
     && git -C ${GOPATH}/src/github.com/${GITHUB_USER} clone https://github.com/${GITHUB_USER}/evilginx2 
     
 RUN set -ex \
-        && cd ${PROJECT_DIR}/ && go get ./... && make \
-		&& cp ${PROJECT_DIR}/build/evilginx ${EVILGINX_BIN} \
-		&& apk del ${INSTALL_PACKAGES} && rm -rf /var/cache/apk/* && rm -rf ${GOPATH}/src/*
+        && cd ${PROJECT_DIR}/ \
+        && git checkout ${VERSION} \
+        && go get ./... && make \
+        && cp ${PROJECT_DIR}/build/evilginx ${EVILGINX_BIN} \
+        && apk del ${INSTALL_PACKAGES} && rm -rf /var/cache/apk/* && rm -rf ${GOPATH}/src/*
 
 COPY ./docker-entrypoint.sh /opt/
 RUN chmod +x /opt/docker-entrypoint.sh
