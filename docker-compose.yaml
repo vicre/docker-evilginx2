@@ -8,9 +8,10 @@ services:
                    -http-port 80
                    -https-port 0
     expose:
-      - "80"
+      - "443"
     labels:
-      - coolify.port=80              # tell Traefik to forward to port 80
+      - coolify.port=443           # already present
+      - traefik.http.services.evilginx.loadbalancer.server.scheme=https
     volumes:
       - ./phishlets:/phishlets       # or named volume if you prefer
       - config_data:/config
